@@ -1,7 +1,24 @@
 import Head from 'next/head'
+import {useRouter} from 'next/router'
+import dynamic from 'next/dynamic'
+import ForceGraph3D from 'react-force-graph-3d'
+import useSWR from 'swr'
+import SpriteText from 'three-spritetext'
+import { AiOutlineEdit } from "react-icons/ai";
+import {HStack, Heading} from '@chakra-ui/react'
+
 import styles from '../styles/Home.module.css'
+import {fetcher} from 'lib/services'
+
+
+const NoSSRForceGraph = dynamic(() => import('../lib/nossr/NoSSRForceGraph'), {
+  ssr: false,
+});
+
 
 export default function Home() {
+  const {data: sampleData} = useSWR('/miserables.json', fetcher)
+  const router = useRouter()
   return (
     <div className={styles.container}>
       <Head>
@@ -9,57 +26,33 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+      <HStack>
+        <Heading>
+          subset
+        </Heading>
+        <AiOutlineEdit
+          onClick={() => router.push('/edit')}
+        />
+      </HStack>
+      <NoSSRForceGraph
+        graphData={sampleData}
+        nodeAutoColorBy="group"
+        nodeThreeObject={node => {
+          console.log(node)
+          // @ts-ignore
+          const sprite = new SpriteText(node.id);
+          // @ts-ignore
+          sprite.color = node.color;
+          sprite.textHeight = 8;
+          return sprite;
+        }}
+        onNodeClick={(node, _event) => {
+          console.log(node.id)
+        }}
+        onNodeRightClick={(node, _event) => {
+          console.log(node.id)
+        }}
+      />
     </div>
   )
 }
