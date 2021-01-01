@@ -2,7 +2,7 @@ import axiosbase from 'axios'
 
 
 export const api = axiosbase.create({
-  baseURL: 'http://localhost:3000',  // TODO: move this info to .env
+  baseURL: process.env.API_URL || 'http://localhost:3000',  // TODO: move this info to .env
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
