@@ -17,7 +17,8 @@ const NoSSRForceGraph = dynamic(() => import('../lib/nossr/NoSSRForceGraph'), {
 
 
 export default function Home() {
-  const {data: sampleData} = useSWR('/miserables.json', fetcher)
+  //const {data: sampleData} = useSWR('/miserables.json', fetcher)
+  const {data: sampleData} = useSWR('/miserables.json', (key) => fetch(key).then(res => res.json()))
   const router = useRouter()
   return (
     <div className={styles.container}>
